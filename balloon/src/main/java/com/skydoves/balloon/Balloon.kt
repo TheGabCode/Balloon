@@ -851,7 +851,7 @@ class Balloon(
 
     /** sets flag for Data Binding support */
     fun isDataBindingSupport(value: Boolean): Builder = apply { this.isDataBindingSupport = value }
-    
+
     fun build(): Balloon = Balloon(context, this@Builder)
   }
 
