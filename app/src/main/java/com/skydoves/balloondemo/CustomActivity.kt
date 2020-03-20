@@ -21,13 +21,16 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.skydoves.balloon.balloon
-import com.skydoves.balloondemo.factory.CustomListBalloonFactory
+import com.skydoves.balloondemo.databinding.LayoutCustomDataBindingBinding
 import com.skydoves.balloondemo.factory.ProfileBalloonFactory
 import com.skydoves.balloondemo.factory.TagBalloonFactory
 import com.skydoves.balloondemo.factory.ViewHolderBalloonFactory
+import com.skydoves.balloondemo.factory.CustomListBalloonFactory
+import com.skydoves.balloondemo.factory.DataBindingBalloonFactory
 import com.skydoves.balloondemo.recycler.CustomAdapter
 import com.skydoves.balloondemo.recycler.CustomItem
 import com.skydoves.balloondemo.recycler.ItemUtils
@@ -49,6 +52,7 @@ class CustomActivity : AppCompatActivity(),
   private val customProfileBalloon by balloon(ProfileBalloonFactory::class)
   private val viewHolderBalloon by balloon(ViewHolderBalloonFactory::class)
   private val customTagBalloon by balloon(TagBalloonFactory::class)
+  private val customDataBindingBalloon by balloon(DataBindingBalloonFactory::class)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -67,17 +71,19 @@ class CustomActivity : AppCompatActivity(),
     listRecycler.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
     this.customAdapter.addCustomItem(ItemUtils.getCustomSamples(this))
 
+    setupDataBindingData(this.customDataBindingBalloon.binding)
+    
     toolbar_list.setOnClickListener {
       this.customListBalloon.showAlignBottom(it)
     }
 
     circleImageView.setOnClickListener {
-      this.customProfileBalloon.showAlignBottom(it)
+      this.customDataBindingBalloon.showAlignBottom(it)
     }
 
-    val buttonEdit: Button = customProfileBalloon.getContentView().findViewById(R.id.button_edit)
+    val buttonEdit: Button = customDataBindingBalloon.getContentView().findViewById(R.id.button_edit)
     buttonEdit.setOnClickListener {
-      this.customProfileBalloon.dismiss()
+      this.customDataBindingBalloon.dismiss()
       Toast.makeText(applicationContext, "Edit", Toast.LENGTH_SHORT).show()
     }
 
@@ -85,6 +91,13 @@ class CustomActivity : AppCompatActivity(),
       this.customTagBalloon.showAlignTop(bottomNavigationView, 130, 0)
       true
     }
+  }
+
+  private fun setupDataBindingData(viewDataBinding: ViewDataBinding?) {
+    val binding = viewDataBinding as LayoutCustomDataBindingBinding
+    binding.title = getString(R.string.app_name)
+    binding.description = getString(R.string.app_name)
+    binding.buttonText = getString(R.string.app_name)
   }
 
   override fun onCustomItemClick(customItem: CustomItem) {

@@ -41,6 +41,8 @@ import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.core.widget.ImageViewCompat
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -77,6 +79,7 @@ class Balloon(
   var onBalloonClickListener: OnBalloonClickListener? = null
   var onBalloonDismissListener: OnBalloonDismissListener? = null
   var onBalloonOutsideTouchListener: OnBalloonOutsideTouchListener? = null
+  var binding: ViewDataBinding? = null
   private var supportRtlLayoutFactor: Int = LTR.unaryMinus(builder.isRtlSupport)
   private val balloonPersistence = BalloonPersistence.getInstance(context)
 
@@ -224,7 +227,16 @@ class Balloon(
 
   private fun initializeCustomLayout() {
     bodyView.balloon_detail.removeAllViews()
-    val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    val inflater = LayoutInflater.from(context)
+    if (builder.isDataBindingSupport) {
+      binding = DataBindingUtil.inflate(
+          inflater,
+          builder.layout,
+          bodyView.balloon_detail,
+          true
+      )
+      return
+    }
     inflater.inflate(builder.layout, bodyView.balloon_detail)
   }
 
@@ -624,6 +636,8 @@ class Balloon(
     var showTimes: Int = 1
     @JvmField
     var isRtlSupport: Boolean = false
+    @JvmField
+    var isDataBindingSupport: Boolean = false
 
     /** sets the width size. */
     fun setWidth(@Dp value: Int): Builder = apply { this.width = context.dp2Px(value) }
@@ -835,6 +849,9 @@ class Balloon(
     /** sets flag for enabling rtl support */
     fun isRtlSupport(value: Boolean): Builder = apply { this.isRtlSupport = value }
 
+    /** sets flag for Data Binding support */
+    fun isDataBindingSupport(value: Boolean): Builder = apply { this.isDataBindingSupport = value }
+    
     fun build(): Balloon = Balloon(context, this@Builder)
   }
 
