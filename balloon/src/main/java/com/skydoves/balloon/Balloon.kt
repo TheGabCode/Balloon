@@ -84,8 +84,7 @@ class Balloon(
   private val balloonPersistence = BalloonPersistence.getInstance(context)
 
   init {
-    val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    this.bodyView = inflater.inflate(R.layout.layout_balloon, null)
+    this.bodyView = builder.bodyView
     val width = getMeasureWidth()
     val params = RelativeLayout.LayoutParams(width, builder.height)
     this.bodyView.layoutParams = params
@@ -560,6 +559,7 @@ class Balloon(
   /** Builder class for creating [Balloon]. */
   @BalloonDsl
   class Builder(private val context: Context) {
+    lateinit var bodyView: View
     @JvmField @Dp
     var width: Int = context.displaySize().x
     @JvmField @FloatRange(from = 0.0, to = 1.0)
@@ -638,6 +638,9 @@ class Balloon(
     var isRtlSupport: Boolean = false
     @JvmField
     var isDataBindingSupport: Boolean = false
+
+    /** sets the body view. */
+    fun setBodyView(value: View): Builder = apply { this.bodyView = value }
 
     /** sets the width size. */
     fun setWidth(@Dp value: Int): Builder = apply { this.width = context.dp2Px(value) }
@@ -852,7 +855,13 @@ class Balloon(
     /** sets flag for Data Binding support */
     fun isDataBindingSupport(value: Boolean): Builder = apply { this.isDataBindingSupport = value }
 
-    fun build(): Balloon = Balloon(context, this@Builder)
+    fun build(): Balloon {
+      if (!::bodyView.isInitialized) {
+        val inflater = LayoutInflater.from(context)
+        this.bodyView = inflater.inflate(R.layout.layout_balloon, null)
+      }
+      return Balloon(context, this@Builder)
+    }
   }
 
   /**
