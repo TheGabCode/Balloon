@@ -389,6 +389,13 @@ class Balloon(
       bodyWindow.showAsDropDown(anchor,
         supportRtlLayoutFactor * ((anchor.measuredWidth / 2) - (getMeasureWidth() / 2)),
         0)
+      if (bodyWindow.isAboveAnchor && builder.arrowOrientation == ArrowOrientation.TOP) {
+        builder.arrowOrientation = ArrowOrientation.BOTTOM
+        initializeArrow()
+      } else if (!bodyWindow.isAboveAnchor && builder.arrowOrientation == ArrowOrientation.BOTTOM) {
+        builder.arrowOrientation = ArrowOrientation.TOP
+        initializeArrow()
+      }
     }
   }
 
